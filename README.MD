@@ -1,4 +1,5 @@
 # notes
+## Js note
 ```js
 // Property code style
 Object.defineProperty(window, 'more_actions_text', {
