@@ -29,15 +29,15 @@ $('#more-actions-btn').text(1)
 ```PHP
 $alertCollection = MongoRecordPeer::collection('alert');
 
-    $cursor = $alertCollection->find([
-        'callout_id' => [
-            '$in' => $expiredOpportunitiesIds
-        ]
-    ]);
+$cursor = $alertCollection->find([
+    'callout_id' => [
+        '$in' => $expiredOpportunitiesIds
+    ]
+]);
+
+foreach ($cursor as $alertDocument) {
+    $alertCollection->remove(['_id' => $alertDocument['_id']]);
     
-    foreach ($cursor as $alertDocument) {
-        $alertCollection->remove(['_id' => $alertDocument['_id']]);
-        
-        $removedCounter++;
-    }
+    $removedCounter++;
+}
 ```
