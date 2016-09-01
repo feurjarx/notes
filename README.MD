@@ -1,5 +1,5 @@
 # Notes
-### Js note: Property Advantage in Jquery
+### Js-note: Property Advantage in Jquery
 ```js
 // Property code style
 Object.defineProperty(window, 'more_actions_text', {
@@ -23,4 +23,21 @@ more_actions_text = 1;
 
 // Simple style througth jQuery
 $('#more-actions-btn').text(1)
+```
+
+### PHP-note: use mongo cursor
+```PHP
+$alertCollection = MongoRecordPeer::collection('alert');
+
+    $cursor = $alertCollection->find([
+        'callout_id' => [
+            '$in' => $expiredOpportunitiesIds
+        ]
+    ]);
+    
+    foreach ($cursor as $alertDocument) {
+        $alertCollection->remove(['_id' => $alertDocument['_id']]);
+        
+        $removedCounter++;
+    }
 ```
