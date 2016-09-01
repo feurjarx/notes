@@ -1,5 +1,5 @@
-# notes
-## Js note
+# Notes
+### Js note: Property Advantage in Jquery
 ```js
 // Property code style
 Object.defineProperty(window, 'more_actions_text', {
