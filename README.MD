@@ -41,3 +41,127 @@ foreach ($cursor as $alertDocument) {
     $removedCounter++;
 }
 ```
+### Jquery+Bootstrap note: Bootstrap highlighting of jQuery element
+```js
+/**
+ * @param arg
+ * @returns {jQuery}
+ */
+$.fn.highlightElement = function (arg) {
+
+    $(this).off('focusin');
+
+    var opts;
+
+    if (arguments.length == 2
+        &&
+        typeof arguments[0] === 'string'
+        &&
+        typeof +arguments[1] === 'number'
+    ) {
+
+        opts = {
+            type: arguments[0],
+            delay: +arguments[1]
+        }
+
+    } else {
+
+        switch (true) {
+            case typeof arg === 'string':
+
+                opts = { type: arg };
+                break;
+
+            case typeof +arg === 'number' && !isNaN(+arg):
+
+                opts = { delay: arg };
+                break;
+
+            default:
+
+                opts = arg || {};
+        }
+    }
+
+    var glyphiconClassByTypeMap = {
+            success: 'glyphicon-ok',
+            warning: 'glyphicon-warning-sign',
+            error: 'glyphicon-remove'
+        };
+
+    opts = $.extend({}, {
+
+        type: 'error',
+        $parent: $(this).parent(),
+        feedback: true
+
+    }, opts);
+
+    $(this).next('.form-control-feedback').remove();
+    opts.$parent
+        .removeClass('has-feedback')
+        .removeClass('has-error')
+        .removeClass('has-warning')
+        .removeClass('has-success')
+    ;
+
+    if (['error', 'warning', 'success'].indexOf(opts.type) !== -1) {
+
+        if (opts.feedback) {
+            opts.$parent
+                .addClass('has-' + opts.type)
+                .addClass('has-feedback')
+                .append($('<span>', {
+                    class: 'form-control-feedback glyphicon ' + glyphiconClassByTypeMap[opts.type]
+                }));
+
+            if (opts.type === 'error') {
+                $(this).focus();
+            }
+
+        } else {
+
+            opts.$parent.addClass('has-' + opts.type);
+        }
+
+        var timerId, hide = function () {
+
+            if (opts.feedback) {
+                opts.$parent
+                    .removeClass('has-feedback')
+                    .removeClass('has-' + opts.type)
+                    .find('span.form-control-feedback').remove();
+
+            } else {
+
+                opts.$parent.removeClass('has-' + opts.type)
+            }
+
+            $(this).off('focusin');
+        };
+
+        hide = hide.bind(this);
+
+        if (opts.delay) {
+
+            timerId = setTimeout(hide, +opts.delay);
+        }
+
+        $(this).focusin(function () {
+
+            if (timerId) {
+                clearTimeout(timerId);
+            }
+
+            hide();
+        });
+
+    }
+
+    return $(this);
+};
+
+```
+
+
