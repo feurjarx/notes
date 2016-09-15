@@ -163,8 +163,21 @@ $.fn.highlightElement = function (arg) {
 };
 
 ```
-### TWIG-note: Show/Hide text througth bootstrap collapse
+### TWIG-note: Show/Hide text througth bootstrap collapse (symfony example)
+```PHP
+// MyTwigExtension.php
+
+public function viewMore($text, $options = [])
+{
+    $options['text'] = strip_tags($text);
+    return $this
+        ->container->get('twig')
+        ->render('@AppBundles/MyTwigExtensions/textCollapse.twig', $options);
+}
+```
+
 ```TWIG
+{# textCollapse.twig #}
 {% set limit = limit is defined and limit ? limit : 150 %}
 
 {% set show_link_text = show_link_text is defined and show_link_text ? show_link_text : ' Show more...' %}
@@ -204,6 +217,7 @@ $.fn.highlightElement = function (arg) {
 {{ object.text|viewMore|raw }}
 {# OR #}
 {{ object.text|viewMore({limit: 70})|raw }}
-
+{# OR without twig extension use #}
+{% include '@AppBundles/MyTwigExtensions/textCollapse.twig' with {text: object.text } %}
 ```
 
