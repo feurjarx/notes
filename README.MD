@@ -221,3 +221,19 @@ public function viewMore($text, $options = [])
 {% include '@AppBundles/MyTwigExtensions/textCollapse.twig' with {text: object.text } %}
 ```
 
+### JS-note: Use private and public fields/methods
+```TS
+Object.defineProperty(this, 'factory', {
+    get: () => {
+        let privateField = 2;
+        let privateFn = () => -1;
+        return {
+            pubField: 3,
+            pubFn: function() {
+                debugger
+                return this.pubField + privateField;
+            }
+        };
+    }
+});
+```
