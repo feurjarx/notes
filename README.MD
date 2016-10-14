@@ -246,15 +246,14 @@ $.post('http://studentgo.ru/search', {q: 'Яковенко' }).done((data) => {
     $(data).find('.student').each((_, studentBlock) => {
 
         let $studentBlock = $(studentBlock);
-
         let studentData = {
             studentId: $studentBlock.data('student-id'),
             studentName: $studentBlock.data('student-name')
         };
+        
         $.post('http://studentgo.ru/student', studentData).done((data) => {
 
             let $studentDetailsBlock = $(data);
-
             let studentDetails = {
                 fullname: $studentDetailsBlock.find('.name-student').html().replace(/\<br\>/g, ' '),
                 group: {
@@ -263,9 +262,9 @@ $.post('http://studentgo.ru/search', {q: 'Яковенко' }).done((data) => {
                 },
                 urls: $studentDetailsBlock.find('.social > a').map((_, link) => link.href ).toArray()
             };
+            
             studList.push(studentDetails);
         });
     });
 });
-console.dir(studList);
 ```
