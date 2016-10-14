@@ -238,7 +238,7 @@ Object.defineProperty(this, 'factory', {
 });
 ```
 
-### student API
+### JS-note (ES2016): student API
 ```JS
 let studList = [];
 $.post('http://studentgo.ru/search', {q: 'Яковенко' }).done((data) => {
