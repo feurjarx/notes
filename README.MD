@@ -237,8 +237,8 @@ Object.defineProperty(this, 'factory', {
     }
 });
 ```
-
-### JS-note (ES2016): student API
+ 
+### JS-note (ES2016): student API (http://studentgo.ru/)
 ```JS
 let studList = [];
 $.post('http://studentgo.ru/search', {q: 'Яковенко' }).done((data) => {
@@ -250,7 +250,7 @@ $.post('http://studentgo.ru/search', {q: 'Яковенко' }).done((data) => {
             studentId: $studentBlock.data('student-id'),
             studentName: $studentBlock.data('student-name')
         };
-        
+
         $.post('http://studentgo.ru/student', studentData).done((data) => {
 
             let $studentDetailsBlock = $(data);
@@ -267,4 +267,5 @@ $.post('http://studentgo.ru/search', {q: 'Яковенко' }).done((data) => {
         });
     });
 });
+console.dir(studList);
 ```
