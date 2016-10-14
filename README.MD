@@ -267,5 +267,6 @@ $.post('http://studentgo.ru/search', {q: 'Яковенко' }).done((data) => {
         });
     });
 });
+...
 console.dir(studList);
 ```
