@@ -40,6 +40,16 @@ foreach ($cursor as $alertDocument) {
     
     $removedCounter++;
 }
+
+// or short case ...
+
+$alertCollection->remove([
+    'callout_id' => [
+        '$in' => $expiredOpportunitiesIds
+    ]
+], [
+    'multiple' => true
+])
 ```
 ### Jquery+Bootstrap note: Bootstrap highlighting of jQuery element
 ```js
