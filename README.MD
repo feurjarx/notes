@@ -280,7 +280,7 @@ $.post('http://studentgo.ru/search', {q: 'Яковенко' }).done((data) => {
 ...
 console.dir(studList);
 ```
-### PHP-cache through closure
+### PHP-cache through closure (laravel example)
 ```php
 // AppCacheService.php
 namespace App\Services;
