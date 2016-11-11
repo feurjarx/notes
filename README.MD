@@ -280,3 +280,93 @@ $.post('http://studentgo.ru/search', {q: 'Яковенко' }).done((data) => {
 ...
 console.dir(studList);
 ```
+### PHP-cache through closure
+```php
+// AppCacheService.php
+namespace App\Services;
+
+class AppCacheService
+{
+    /**
+     * Minutes
+     * @var int
+     */
+    private $cacheTtl = 1;
+
+    /**
+     * @var \Illuminate\Cache\Repository
+     */
+    private $cacheRepository;
+
+    /**
+     * AppCacheService constructor.
+     */
+    public function __construct()
+    {
+        $this->cacheRepository = \Cache::store(env('CACHE_DRIVER'));
+    }
+
+    /**
+     * @param $key
+     * @param \Closure|null $handler
+     * @param null $ttl
+     * @return mixed|null
+     */
+    public function get($key, \Closure $handler = null, $ttl = null)
+    {
+        if ($this->cacheRepository->has($key)) {
+
+            $result = json_decode($this->cacheRepository->get($key));
+
+        } else {
+
+            if ($handler) {
+
+                $result = $handler();
+                $this->set($key, $result, $ttl);
+
+            } else {
+
+                $result = null;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param $key
+     * @param $value
+     * @param null $ttl
+     */
+    public function set($key, $value, $ttl = null)
+    {
+        $this->cacheRepository->add($key, json_encode($value), $ttl ? $ttl : $this->cacheTtl);
+    }
+
+    /**
+     * @param $key
+     */
+    public function remove($key)
+    {
+        $this->cacheRepository->forget($key);
+    }
+}
+
+// without cache (MyController.php)
+// any handling with big data 
+...
+$objA = 1;
+$objB = 2;
+
+// use case (MyController.php)
+list($objA, $objB) = $cache->get('my.cache.key', function() {
+    // any handling with big data 
+    ...
+    $objA = 1;
+    $objB = 2;
+
+    return [$objA, $objB];
+});
+
+```
