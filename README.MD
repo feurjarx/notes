@@ -370,3 +370,81 @@ list($objA, $objB) = $cache->get('my.cache.key', function() {
 });
 
 ```
+### Localstorage cache (Angularjs 2 example)
+```ts
+import {Injectable} from '@angular/core';
+import {Observable} from 'rxjs/Rx';
+
+@Injectable()
+export class LocalStorageService {
+
+    private support: boolean;
+
+    constructor() {
+
+        this.support = false;
+        if (typeof localStorage !== 'undefined') {
+
+            try {
+
+                localStorage.setItem('test', 'test');
+                localStorage.removeItem('test');
+
+                this.support = true;
+
+            } catch (err) {
+            }
+        }
+    }
+
+    cache(key: string, handler: (done: Function) => Promise<any>): Promise<any> {
+        let cacheValue = this.get(key);
+        return cacheValue ? Observable.of(cacheValue).toPromise() : handler(data => {
+            this.set(key, data);
+            return data;
+        });
+    }
+
+    get(key: string): any {
+
+        return this.support ? JSON.parse(localStorage.getItem(key)) : null;
+    }
+
+    set(key: string, value: any) {
+
+        if (this.support) {
+            localStorage.setItem(key, JSON.stringify(value));
+        }
+    }
+
+    remove(key) {
+
+        if (this.support) {
+            localStorage.removeItem(key);
+        }
+    }
+}
+
+// use case
+// without cache
+getObjects(id: number): Promise<Array<MyObject>> {
+
+    let url = `api/test?object_id=${ id }`;
+    return this.http.get(url)
+        .toPromise()
+        .then(response => response.json() as Array<MyObject>)
+        .catch(this.handleError));
+}
+
+
+// use cache
+getObjects(id: number): Promise<Array<MyObject>> {
+
+    let url = `api/test?object_id=${ id }`;
+    return this.localStorageService.cache(url, keep => this.http.get(url)
+        .toPromise()
+        .then(response => keep(response.json() as Array<MyObject>))
+        .catch(this.handleError));
+}
+
+```
