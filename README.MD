@@ -374,6 +374,12 @@ list($objA, $objB) = $cache->get('my.cache.key', function() {
 ```ts
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Rx';
+import {Utils} from '../utils';
+
+interface UnitStorage {
+    data: any;
+    expire_at: number;
+}
 
 @Injectable()
 export class LocalStorageService {
@@ -398,32 +404,61 @@ export class LocalStorageService {
     }
 
     cache(key: string, handler: (done: Function) => Promise<any>): Promise<any> {
+
         let cacheValue = this.get(key);
-        return cacheValue ? Observable.of(cacheValue).toPromise() : handler(data => {
-            this.set(key, data);
+        return cacheValue ? Observable.of(cacheValue).toPromise() : handler((data: any, duration = null) => {
+            this.set(key, data, duration);
             return data;
         });
     }
 
     get(key: string): any {
 
-        return this.support ? JSON.parse(localStorage.getItem(key)) : null;
-    }
-
-    set(key: string, value: any) {
+        let result: UnitStorage = null;
 
         if (this.support) {
-            localStorage.setItem(key, JSON.stringify(value));
+
+            let value: UnitStorage = JSON.parse(localStorage.getItem(Utils.hex(key)));
+            if (value) {
+                if (value.expire_at) {
+
+                    if ((new Date()).getTime() < value.expire_at) {
+
+                        result = value.data;
+
+                    } else {
+
+                        this.remove(key);
+                    }
+
+                } else {
+
+                    result = value.data;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    set(key: string, value: any, duration: number = null) {
+
+        if (this.support) {
+            localStorage.setItem(Utils.hex(key), JSON.stringify({
+                data: value,
+                expire_at: duration ? (new Date()).getTime() + duration * 60 * 1000 : null
+            }));
         }
     }
 
     remove(key) {
 
         if (this.support) {
-            localStorage.removeItem(key);
+            localStorage.removeItem(Utils.hex(key));
         }
     }
 }
+
 
 // use case
 // without cache
@@ -444,6 +479,16 @@ getObjects(id: number): Promise<Array<MyObject>> {
     return this.localStorageService.cache(url, keep => this.http.get(url)
         .toPromise()
         .then(response => keep(response.json() as Array<MyObject>))
+        .catch(this.handleError));
+}
+
+// use expired cache
+getObjects(id: number): Promise<Array<MyObject>> {
+
+    let url = `api/test?object_id=${ id }`;
+    return this.localStorageService.cache(url, keep => this.http.get(url)
+        .toPromise()
+        .then(response => keep(response.json() as Array<MyObject>, 60)) // 60 minutes
         .catch(this.handleError));
 }
 
