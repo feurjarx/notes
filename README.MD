@@ -493,3 +493,129 @@ getObjects(id: number): Promise<Array<MyObject>> {
 }
 
 ```
+
+### C Sharp serialization EF-model by custom properties
+```c#
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using System.Reflection;
+using System.Collections;
+...
+public static string toJsonByCustomProperties(object obj, List<object> properties)
+{
+    return toJson(serializeToDictionary(obj, properties));
+}
+
+public static Dictionary<string, object> serializeToDictionary(object obj, List<object> properties)
+{
+    Dictionary<string, object> result = new Dictionary<string, object>();
+
+    foreach (var property in properties)
+    {
+        if (property.GetType() == typeof(string))
+        {
+            string key = (string)property;
+            var value = obj.GetType().GetProperty(key).GetValue(obj, null);
+            result.Add(key, value);
+        }
+        else
+        {
+            Type instance = property.GetType();
+
+            string key = (string)instance
+                .GetProperty("key")
+                .GetValue(property);
+
+            object childObject = obj.GetType()
+                    .GetProperty(key)
+                    .GetValue(obj);
+
+            List<object> childProperties = (List<object>)instance
+                    .GetProperty("properties")
+                    .GetValue(property);
+
+            if (childObject != null)
+            {
+                PropertyInfo propertyInfo = instance.GetProperty("type");
+                string type = propertyInfo != null ? (string)propertyInfo.GetValue(property, null) : null;
+                if (type == null || type == "object")
+                {
+                    result.Add(key, serializeToDictionary(childObject, childProperties));
+                }
+                else
+                {
+                    List<object> list = new List<object>();
+                    foreach (var item in (IEnumerable)childObject)
+                    {
+                        list.Add(serializeToDictionary(item, childProperties));
+                    }
+
+                    result.Add(key, list);
+                }
+            }
+            else
+            {
+                result.Add(key, null);
+            }
+        }
+    }
+
+    return result;
+}
+
+// use case
+private List<object> calloutProperties = new List<object>()
+{
+    "id",
+    "created_at",
+    new
+    {
+        key = "airtickets",
+        type = "array",
+        properties = new List<object>()
+        {
+            "id",
+            "departure_at",
+            "payment",
+            new
+            {
+                key = "flight",
+                properties = new List<object>
+                {
+                    "id",
+                    "code",
+                    "flight_at",
+                    "duration"
+                }
+            }
+        }
+    }
+};
+
+[HttpGet]
+public JsonResult PredefinedCallouts()
+{
+    Dictionary<string, object> result = new Dictionary<string, object>();
+
+    IQueryable<callout> qb = _dbContext.callouts
+        .Where(c => c.is_predefined == 1);
+
+    result.Add("callouts", new List<object>());
+
+    int pageSize = int.Parse(Request["pageSize"]);
+    int pageNumber = int.Parse(Request["pageNumber"]);
+    int offset = (pageNumber - 1) * pageSize;
+
+    List<callout> callouts = qb
+        .OrderByDescending(c => c.created_at)
+        .Skip(offset)
+        .ToList();
+
+    foreach (callout c in callouts)
+    {
+        ((List<object>)result["callouts"]).Add(Utils.toJsonByCustomProperties(c, calloutProperties));
+    }
+    
+    return Json(result, JsonRequestBehavior.AllowGet);
+}
+```
