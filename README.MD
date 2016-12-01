@@ -173,55 +173,6 @@ $.fn.highlightElement = function (arg) {
 };
 
 ```
-### TWIG-note: Show/Hide text througth bootstrap collapse (symfony example)
-```PHP
-// MyTwigExtension.php
-
-public function viewMore($text, $options = [])
-{
-    $options['text'] = strip_tags($text);
-    return $this
-        ->container->get('twig')
-        ->render('@AppBundles/MyTwigExtensions/textCollapse.twig', $options);
-}
-```
-
-```TWIG
-{# textCollapse.twig #}
-{% set limit = limit is defined and limit ? limit : 150 %}
-
-{% set show_link_text = show_link_text is defined and show_link_text ? show_link_text : ' Show more...' %}
-{% set hide_link_text = hide_link_text is defined and hide_link_text ? hide_link_text : ' Hide' %}
-
-{% set container_class = container_class is defined and container_class ? (' ' ~ container_class) %}
-
-<div class="show-more-box{{ container_class }}">
-
-    <span class="text-justify">
-
-        <span class="initial-text">{{ text|slice(0, limit)|raw }}</span>{% spaceless %}
-
-            {% if text|length > limit %}
-
-                {% set id = 'collapse-' ~ random(1000) %}
-
-                <span class="secondary-text collapse-{{ id }} collapse text-justify" id="{{ id }}">{{ text|slice(limit)|raw }}</span>
-                <span class="collapse-{{ id }} in">&nbsp;...</span>
-
-                <i>
-                    <a data-toggle="collapse" href="javascript: void(0)" data-target=".collapse-{{ id }}"
-                       onclick="this.text = document.getElementById('{{ id }}').classList.contains('in') ? '{{ show_link_text }}' : '{{ hide_link_text }}'"
-                    >{{ show_link_text }}</a>
-                </i>
-
-            {% endif %}
-
-        {% endspaceless %}
-
-    </span>
-</div>
-
-```
 #### Call example: 
 ```TWIG
 {{ object.text|viewMore|raw }}
