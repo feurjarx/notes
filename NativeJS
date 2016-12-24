@@ -1,0 +1,15 @@
+# Замыкание
+```JS
+var obj = (function () {
+    var privateValue = 1;
+
+    return {
+        get val() {
+            return privateValue;
+        },
+        set val(v) {
+            privateValue = v;
+        }
+    }
+}());
+```
