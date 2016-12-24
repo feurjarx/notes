@@ -86,6 +86,7 @@ var module = (function () {
             value++;
             counter++;
             audit(true);
+            
             return this;
         },
         down: function () {
