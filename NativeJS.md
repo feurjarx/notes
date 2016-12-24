@@ -87,7 +87,7 @@ var module = (function () {
             counter++;
             audit(true);
             
-            return this;
+            return this; // для каскада
         },
         down: function () {
             value--;
@@ -104,3 +104,24 @@ var module = (function () {
 <b>Идея:</b>
 Сокрытие состояний и реализации предоставляемого интерфейса, тем самым сглаживается недостаток JS - глобальность переменных.
 Модули основаны на функциях и замыканиях.
+<hr>
+## Каррирование
+```JS
+Function.prototype.curry = function () {
+    var slice = Array.prototype.slice;
+    var args = slice.apply(arguments);
+    var _this = this;
+
+    return function () {
+        return _this.apply(null, args.concat(arguments));
+    }
+};
+
+var fn = function() { 
+    console.log(arguments); 
+};
+
+var fn1 = fn.curry(123);
+fn1(345);
+```
+<b>Идея:</b> создание новой функции на основе прежней и нового аргумента.
