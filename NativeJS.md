@@ -106,22 +106,30 @@ var module = (function () {
 Модули основаны на функциях и замыканиях.
 <hr>
 ## Каррирование
+js
 ```JS
-Function.prototype.curry = function () {
-    var slice = Array.prototype.slice;
-    var args = slice.apply(arguments);
-    var _this = this;
-
-    return function () {
-        return _this.apply(null, args.concat(arguments));
-    }
+Function.prototype.curry = function() {
+  
+  var toArray = function(list) {
+	  return [].map.call(list, function(arg) { return arg });
+  };
+  
+  // closure ...
+  var args = toArray(arguments);
+  var fn = this;
+  
+  return function() {
+    return fn.apply(fn, args.concat(toArray(arguments)));
+  }
 };
 
-var fn = function() { 
-    console.log(arguments); 
+var sum = function(a,b) { 
+	return a + b 
 };
 
-var fn1 = fn.curry(123);
-fn1(345);
+var sum10 = sum.curry(10);
+var sum2000 = sum.curry(2000);
+sum10(2); // 12
+sum2000(17); // 2017
 ```
-<b>Идея:</b> создание новой функции на основе прежней и нового аргумента.
+<b>Идея:</b> создание новой функции на основе прежней и с ее предопределенными аргументами.
