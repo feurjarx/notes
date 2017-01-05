@@ -106,7 +106,6 @@ var module = (function () {
 Модули основаны на функциях и замыканиях.
 <hr>
 ## Каррирование
-js
 ```JS
 Function.prototype.curry = function() {
   
@@ -133,3 +132,55 @@ sum10(2); // 12
 sum2000(17); // 2017
 ```
 <b>Идея:</b> создание новой функции на основе прежней и с ее предопределенными аргументами.
+## Композиция
+```js
+function compose() {
+	
+	var fns = []
+		.map.call(arguments, function(fn){ 
+			return fn 
+		})
+		.reverse()
+	;
+	
+	return function(v) {
+		
+		fns.forEach(function(fn) {
+			v = fn(v);
+		});
+		
+		return v;
+	}
+}
+// use
+function compose() {
+	
+	var fns = []
+		.map.call(arguments, function(fn){ 
+			return fn 
+		})
+	;
+	
+	return function(v) {
+		
+		fns.forEach(function(fn) {
+			v = fn(v);
+		});
+		
+		return v;
+	}
+}
+
+var add5 = function(v) {
+	return v + 5;
+}
+
+var div3 = function(v) {
+	return v / 3;
+}
+
+debugger
+var common = compose(add5, div3);
+common(2); // 2.3333333333333335
+```
+<b>Идея:</b> объединение несколько функций в одну.
