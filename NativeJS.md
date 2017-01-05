@@ -140,7 +140,6 @@ function compose() {
 		.map.call(arguments, function(fn){ 
 			return fn 
 		})
-		.reverse()
 	;
 	
 	return function(v) {
@@ -153,24 +152,6 @@ function compose() {
 	}
 }
 // use
-function compose() {
-	
-	var fns = []
-		.map.call(arguments, function(fn){ 
-			return fn 
-		})
-	;
-	
-	return function(v) {
-		
-		fns.forEach(function(fn) {
-			v = fn(v);
-		});
-		
-		return v;
-	}
-}
-
 var add5 = function(v) {
 	return v + 5;
 }
