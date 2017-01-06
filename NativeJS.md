@@ -169,40 +169,41 @@ common(2); // 2.3333333333333335
 
 ## Простая реализация Promise
 ```js
-var asyncFn = function() {
-		
+var MyPromise = (function(asyncFn) {
+	
 	var callbacks = [];
-	var myPromise = {
+	asyncFn.call(this, function(data){
+		callbacks.forEach(function(callback) {
+			data = callback(data);
+		});
+	});
+	
+	return {
 		then: function(fn) {		
 			callbacks.push(fn);			
 			return this;
 		}
 	};
-	
-	// Imitation of the request to the server
+});
+
+MyPromise(function(resolve) {
+
 	setTimeout(function() {
 		
 		var data = { 
 			key: 'value'
 		};
 		
-		callbacks.forEach(function(callback) {
-			data = callback(data);
-		});
+		resolve(data);
 		
 	}, 2000);
 	
-	return myPromise;
-};
-
-asyncFn()
-	.then(function(data) {
-		data['key2'] = 'value-2';
-		return data;
-	})
-	.then(function(data) {
-		console.log(data['correct']);
-	})
+}).then(function(data) {
+	data['key2'] = 'value-2';
+	return data;
+}).then(function(data) {
+	console.log(data);
+})
 ;
 ```
 <b>Идея:</b> асинхронный возврат функции, возможный благодаря замыканию.
