@@ -99,7 +99,6 @@ var module = (function () {
     };
 
 }());
-
 ```
 <b>Идея:</b>
 Сокрытие состояний и реализации предоставляемого интерфейса, тем самым сглаживается недостаток JS - глобальность переменных.
@@ -132,6 +131,7 @@ sum10(2); // 12
 sum2000(17); // 2017
 ```
 <b>Идея:</b> создание новой функции на основе прежней и с ее предопределенными аргументами.
+<hr>
 ## Композиция
 ```js
 function compose() {
@@ -165,3 +165,45 @@ var common = compose(add5, div3);
 common(2); // 2.3333333333333335
 ```
 <b>Идея:</b> объединение несколько функций в одну.
+<hr>
+
+## Простая реализация Promise
+```js
+var asyncFn = function() {
+		
+	var callbacks = [];
+	var myPromise = {
+		then: function(fn) {		
+			callbacks.push(fn);			
+			return this;
+		}
+	};
+	
+	// Imitation of the request to the server
+	setTimeout(function() {
+		
+		var data = { 
+			key: 'value'
+		};
+		
+		callbacks.forEach(function(callback) {
+			data = callback(data);
+		});
+		
+	}, 2000);
+	
+	return myPromise;
+};
+
+asyncFn()
+	.then(function(data) {
+		data['key2'] = 'value-2';
+		return data;
+	})
+	.then(function(data) {
+		console.log(data['correct']);
+	})
+;
+```
+<b>Идея:</b> асинхронный возврат функции, возможный благодаря замыканию.
+<hr>
