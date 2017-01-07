@@ -212,7 +212,7 @@ MyPromise(function(resolve) {
 ## Простая реализация js-шаблонизатора
 ```HTML
 <template id="template">
-	Hello, {{ name }}!
+	Hello, {{ name }}! (now {{ time }})
 </template>
 
 <div id="place"></div>
@@ -222,14 +222,18 @@ MyPromise(function(resolve) {
 
 ```js
 var MyRender = (function(){
+	
+	var pattern = /{{[a-zA-Z\s]+}}/g;
+	
 	return {
 		render: function(template, data) {
 		
-			var parts = template.split(/\{\{.+\}\}/g);	
-			var matches = template.match(/\{\{.*\}\}/g);
+			var parts = template.split(pattern);	
+			var matches = template.match(pattern);
 			
 			var html = '';
 			var prop;
+			debugger
 			parts.forEach(function(part, i) {
 				
 				html += part;
@@ -251,7 +255,8 @@ var MyRender = (function(){
 }());
 
 place.innerHTML = MyRender.render(template.content.textContent, {
-	name: 'User'
+	name: 'User',
+	time: (new Date()).toLocaleTimeString()
 });
 ```
 <b>Идея:</b> рендеринг html по заданному шаблону.
