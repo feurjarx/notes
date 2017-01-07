@@ -208,3 +208,51 @@ MyPromise(function(resolve) {
 ```
 <b>Идея:</b> асинхронный возврат функции, возможный благодаря замыканию.
 <hr>
+
+## Простая реализация js-шаблонищатора
+```HTML
+<template id="template">
+	Hello, {{ name }}!
+</template>
+
+<div id="place"></div>
+
+<script src="script.js"></script>
+```
+
+```js
+var MyRender = (function(){
+	return {
+		render: function(template, data) {
+		
+			var parts = template.split(/\{\{.+\}\}/g);	
+			var matches = template.match(/\{\{.*\}\}/g);
+			
+			var html = '';
+			var prop;
+			parts.forEach(function(part, i) {
+				
+				html += part;
+				if (i !== parts.length - 1) {
+									
+					prop = matches[i]
+						.replace(/\{\{/g, '')
+						.replace(/\}\}/g, '')
+						.trim()
+						;
+						
+					html += data[prop];
+				}
+			});
+			
+			return html;
+		}
+	};
+}());
+
+place.innerHTML = MyRender.render(template.content.textContent, {
+	name: 'User'
+});
+```
+<b>Идея:</b> рендеринг html по заданному шаблону.
+<hr>
