@@ -106,16 +106,14 @@ var module = (function () {
 <hr>
 
 ## Простая реализация Promise
-    ```js
+```js
 var MyPromise = (function(asyncFn) {
-
 	var callbacks = [];
 	asyncFn.call(this, function(data){
 		callbacks.forEach(function(callback) {
 			data = callback(data);
 		});
 	});
-
 	return {
 		then: function(fn) {
 			callbacks.push(fn);
@@ -123,7 +121,6 @@ var MyPromise = (function(asyncFn) {
 		}
 	};
 });
-
 MyPromise(function(resolve) {
 
 	setTimeout(function() {
@@ -142,7 +139,4 @@ MyPromise(function(resolve) {
 }).then(function(data) {
 	console.log(data);
 })
-;
 ```
-<b>Идея:</b> асинхронный возврат функции, возможный благодаря замыканию.
-<hr>
