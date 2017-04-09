@@ -104,3 +104,31 @@ var module = (function () {
 <b>Идея:</b>
 Сокрытие состояний и реализации предоставляемого интерфейса, тем самым сглаживается недостаток JS - глобальность переменных. Модули основаны на функциях и замыканиях.
 <hr>
+## Каррирование
+```JS
+Function.prototype.curry = function() {
+
+  var toArray = function(list) {
+	  return [].map.call(list, function(arg) { return arg });
+  };
+
+  // closure ...
+  var args = toArray(arguments);
+  var fn = this;
+
+  return function() {
+    return fn.apply(fn, args.concat(toArray(arguments)));
+  }
+};
+
+var sum = function(a,b) {
+	return a + b
+};
+
+var sum10 = sum.curry(10);
+var sum2000 = sum.curry(2000);
+sum10(2); // 12
+sum2000(17); // 2017
+```
+<b>Идея:</b> создание новой функции на основе прежней и с ее предопределенными аргументами.
+<hr>
