@@ -104,31 +104,45 @@ var module = (function () {
 <b>Идея:</b>
 Сокрытие состояний и реализации предоставляемого интерфейса, тем самым сглаживается недостаток JS - глобальность переменных. Модули основаны на функциях и замыканиях.
 <hr>
-## Каррирование
-```JS
-Function.prototype.curry = function() {
 
-  var toArray = function(list) {
-	  return [].map.call(list, function(arg) { return arg });
-  };
+## Простая реализация Promise
+    ```js
+var MyPromise = (function(asyncFn) {
 
-  // closure ...
-  var args = toArray(arguments);
-  var fn = this;
+	var callbacks = [];
+	asyncFn.call(this, function(data){
+		callbacks.forEach(function(callback) {
+			data = callback(data);
+		});
+	});
 
-  return function() {
-    return fn.apply(fn, args.concat(toArray(arguments)));
-  }
-};
+	return {
+		then: function(fn) {
+			callbacks.push(fn);
+			return this;
+		}
+	};
+});
 
-var sum = function(a,b) {
-	return a + b
-};
+MyPromise(function(resolve) {
 
-var sum10 = sum.curry(10);
-var sum2000 = sum.curry(2000);
-sum10(2); // 12
-sum2000(17); // 2017
+	setTimeout(function() {
+
+		var data = {
+			key: 'value'
+		};
+
+		resolve(data);
+
+	}, 2000);
+
+}).then(function(data) {
+	data['key2'] = 'value-2';
+	return data;
+}).then(function(data) {
+	console.log(data);
+})
+;
 ```
-<b>Идея:</b> создание новой функции на основе прежней и с ее предопределенными аргументами.
+<b>Идея:</b> асинхронный возврат функции, возможный благодаря замыканию.
 <hr>
