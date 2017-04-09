@@ -34,8 +34,8 @@ var calculator = function(param1, param2) {
 Возвращаемая функция имеет доступ к внутренним переменным и параметрам
 <hr>
 ## Модули
-```JS
 
+```JS
 var module = (function () {
 
     var counter = 0; // initial
